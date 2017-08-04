@@ -9,6 +9,8 @@
 # LMM  | 24/07/2017 | Initial research and implementations
 # LMM  | 01/08/2017 | Added Array for seperate tests & Tested lengh of input
 # LMM  | Wed Aug  2 10:16:35 UTC 2017 | Addition of test 2
+# LMM  | Fri Aug  4 07:32:17 UTC 2017 | test 2 edits and test 3 implementation
+################################################################################
 #
 # Description:
 # Matching hostnames to a schema of...
@@ -30,53 +32,71 @@
 # Finally add color to tests for aesthetic purposes
 # 8th Pass it options (inputs from various locations)
 
+#colors
+red='\033[0;31m'
+green='\033[0;32m'
+cyan='\033[0;36m'
+noclr='\033[0m'
+
+#results
+pass=${green}pass${noclr}
+fail=${red}fail${noclr}
+
 declare -l mystring
 mystring=$1
 echo ${#mystring}
 echo $mystring
 #exit
 
+################################################################################
+
 # Lengh
-if [ ${#mystring} -lt 254 ]; then
-  echo "Hostname lengh243 Test: pass"
+if [ ${#mystring} -lt 254 ] ;then
+  echo -e "Hostname lengh253 Test: $pass"
 else
-  echo "Hostname lengh253 Test: fail"
+  echo -e "Hostname lengh253 Test: $fail"
 fi
+
+
 
 # Whitespace
-if [[ $mystring == [[:space:]] ]] ;then # includes * for tabs
-   echo "Whitespace test: fail"
+if [[ $mystring =~ [[:space:]] ]] ;then 
+   echo -e "Whitespace test: $fail"
 else 
-   echo "Whitespace test: Pass"
+   echo -e "Whitespace test: $pass"
 fi
 
-# Symbols
-#if [[ $mystring == *['!'@#\$%^\&*()_+]* ]] ;then
-#   echo "Symbol test: fail"
-#else 
-#   echo "Symbol test: pass"
-#fi
+
 
 # Punctuation & Symbols
-if [[ $mystring =~ [[:punct:]] ]] ;then
-   echo "Punctuation test: fail"
+if [[ $mystring =~ [^[:alnum:]\.-]+ ]] ;then
+   echo -e "Symbol test: $fail"
 else
-   echo "Punctuation test: pass"
+   echo -e "Symbol test: $pass"
 fi
 
-exit
 
-# create array for hyphen's segments
+
+# create array to segment at period (.)
 set -f
    # avoid globing (expansion of *)
-array=(${mystring//-/ })
-for i in "${!array[@]}"
-do
-    echo "$i=>${array[i]}"
-done
-   # need to work on items in list
+segments=(${mystring//./ })
+echo "There are ${#segments[@]} segments"
 
-rawseg=${#array}
-segments=$(($rawseg + 1))
-printf "There are %d segments" $segments
-   # Will need to be able to identify if enough segments are in the schema later on. 
+
+
+# Segment test
+if [ ${#segments[@]} -lt 4 ] ;then
+   echo -e "Subdomain count test: $pass"
+else
+   echo -e "Subdomain count test: $fail"
+fi
+
+seg1=${segments[0]}
+seg2=${segments[1]}
+seg3=${segments[2]}
+
+echo $seg1
+echo $seg2
+echo $seg3
+
