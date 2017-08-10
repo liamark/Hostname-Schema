@@ -2,30 +2,34 @@
 #
 # User: lmm
 #
+# Date: Tue Aug  8 11:20:29 UTC 2017
+#
 # Changelog:
 #
 # Who  | When       | What
 # =====+============+===========================================================
 # LMM  | 24/07/2017 | Initial research and implementations
 # LMM  | 01/08/2017 | Added Array for seperate tests & Tested lengh of input
-# LMM  | Wed Aug  2 10:16:35 UTC 2017 | Addition of test 2
-# LMM  | Fri Aug  4 07:32:17 UTC 2017 | test 2 edit, test 3+4+5+6 & color added
+# LMM  | 02/08/2017 | Addition of test 2
+# LMM  | 04/08/2017 | test 2 edit, test 3+4+5+6 & color added
+# LMM  | 08/08/2017 | Changes requested by JRS
 ################################################################################
 #
 # Description:
-# Matching hostnames to a schema of...
+# A script to match the following hostname schema
 # [CHAR(2)]-[VARCHAR(<=6)]-[VARCHAR(<=5)]-[CHAR(1)][DECIMAL(2,0)].DOMAIN.LOCAL
+# The entries must fulfil FQDN requirements in accordance with RFC 952, unless 
+# there is an updated requirement specified in RFC 1123  
+#
 #
 # Plan:
-# done | 1st test lengh of input is 253 or less chars
-# done | 2nd test check for and identify any illegal chars;
-#        whitespace, symbols & punctuation (could just test legal chars)
-# done | 3rd test for max 3 labels delimited by . with a max of 63 characters
-# done | 4th test labels for illegal hyphens at start and end of labels
-# done | 5th test for failures of .DOMAIN & .LOCAL labels with correct error 
-# done | 6th delimit labels by hyphens in array to test against schema
-# 7th test individual failures of delimited first label seperated by hyphens
-# done | Finally add color to tests for aesthetic purposes
+# Test for blank entry
+# A single regex to achieve schema test at the very end
+# use functions where possible
+# Turn debuggin on
+# edit description: to do with RFC's and requirements of FQDN's
+# Add non zero exits
+# Change color implementation from ascii to t-put
 # 8th Pass it options (inputs from various locations)
 
 #colors
@@ -82,7 +86,7 @@ segments=(${mystring//./ })
 
 
 # Subdomain count
-if [ ${#segments[@]} -lt 4 ]; then
+if [ ${#segments[@]} -le 3 ]; then
    echo -e "Subdomain count test: $pass"
 else
    echo -e "Subdomain count test: $fail"
@@ -92,7 +96,7 @@ fi
 
 # Subdomain lenghs
 for i in ${!segments[@]}; do
-   if [[ ${#segments[i]} -lt 64 ]]; then
+   if [[ ${#segments[i]} -le 63 ]]; then
       echo -e "Subdomain $((i+1)) lengh test: $pass"
    else
       echo -e "Subdomain $((i+1)) lengh test: $fail"
@@ -123,25 +127,25 @@ for i in ${seg1array[@]}; do
 echo $i
 done
 
-if [[ ${#seg1array[0]} =~ [a-z0-9]{1} ]]; then
+if [[ ${seg1array[0]} =~ ^[a-z0-9]{2} ]]; then
    echo -e "Subdomain segment one test: $pass"
 else
    echo -e "Subdomain segment one test: $fail"
 fi
 
-if [[ ${#seg1array[1]} =~ [a-z0-9]{0,5} ]]; then
+if [[ ${seg1array[1]} =~ ^[a-z0-9]{1,6} ]]; then
    echo -e "Subdomain segment two test: $pass"
 else
    echo -e "Subdomain segment two test: $fail"
 fi
 
-if [[ ${#seg1array[2]} =~ [a-z0-9]{0,4} ]]; then
+if [[ ${seg1array[2]} =~ ^[a-z0-9]{1,5} ]]; then
    echo -e "Subdomain segment three test: $pass"
 else
    echo -e "Subdomain segment three test: $fail"
 fi
 
-if [[ ${#seg1array[3]} =~ a-z0-9{1}0-9{2} ]]; then
+if [[ ${seg1array[3]} =~ ^[a-z][0-9]{2} ]]; then
    echo -e "Subdomain segment four test: $pass"
 else
    echo -e "Subdomain segment four test: $fail"
